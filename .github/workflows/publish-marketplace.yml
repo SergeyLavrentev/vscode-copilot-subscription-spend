@@ -32,7 +32,7 @@ jobs:
             exit 1
           fi
           npm version "$TAG_VERSION" --no-git-tag-version --allow-same-version
-          echo "Publishing version: $(node -p \"require('./package.json').version\")"
+          echo "Publishing version: $(node -p "require('./package.json').version")"
 
       - name: Marketplace preflight check
         run: make marketplace-check
@@ -41,13 +41,13 @@ jobs:
         run: npm run compile
 
       - name: Package VSIX
-        run: npx @vscode/vsce package --allow-missing-repository --skip-license
+        run: make package
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
           name: vsix-${{ github.ref_name }}
-          path: '*.vsix'
+          path: 'build/*.vsix'
 
       - name: Publish to VS Code Marketplace
         env:

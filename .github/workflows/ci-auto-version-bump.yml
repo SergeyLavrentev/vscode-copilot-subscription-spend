@@ -40,9 +40,9 @@ jobs:
 
       - name: Bump patch version and push
         run: |
-          CURRENT_VERSION="$(node -p \"require('./package.json').version\")"
+          CURRENT_VERSION="$(node -p "require('./package.json').version")"
           npm version patch --no-git-tag-version
-          NEXT_VERSION="$(node -p \"require('./package.json').version\")"
+          NEXT_VERSION="$(node -p "require('./package.json').version")"
 
           if [ "$CURRENT_VERSION" = "$NEXT_VERSION" ]; then
             echo "Version unchanged (${CURRENT_VERSION}), skipping commit."

@@ -32,7 +32,7 @@ jobs:
             exit 1
           fi
           npm version "$TAG_VERSION" --no-git-tag-version --allow-same-version
-          echo "Release version: $(node -p \"require('./package.json').version\")"
+          echo "Release version: $(node -p "require('./package.json').version")"
 
       - name: Marketplace preflight check
         run: make marketplace-check
@@ -43,7 +43,7 @@ jobs:
       - name: Resolve VSIX filename
         id: vsix
         run: |
-          VSIX_FILE="$(ls -1 *.vsix | head -n1)"
+          VSIX_FILE="$(find build -maxdepth 1 -type f -name '*.vsix' | head -n1)"
           if [ -z "$VSIX_FILE" ]; then
             echo "VSIX artifact was not found"
             exit 1

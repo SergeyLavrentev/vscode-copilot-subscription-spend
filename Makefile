@@ -4,7 +4,8 @@ EXT_NAME := $(shell node -p "require('./package.json').name")
 EXT_PUBLISHER := $(shell node -p "require('./package.json').publisher || ''")
 EXT_ID := $(if $(EXT_PUBLISHER),$(EXT_PUBLISHER).$(EXT_NAME),$(EXT_NAME))
 EXT_VERSION := $(shell node -p "require('./package.json').version")
-VSIX := $(EXT_NAME)-$(shell node -p "require('./package.json').version").vsix
+BUILD_DIR := build
+VSIX := $(BUILD_DIR)/$(EXT_NAME)-$(shell node -p "require('./package.json').version").vsix
 
 .PHONY: help MakeBuild build watch lint test clean package install-vsix quick-install quick-update bootstrap node-check publish preflight status bump-patch bump-minor bump-major release-local marketplace-check
 
@@ -71,10 +72,11 @@ test:
 	npm test
 
 clean:
-	rm -rf out *.vsix
+	rm -rf out $(BUILD_DIR) *.vsix
 
 package: build
-	npx @vscode/vsce package --allow-missing-repository --skip-license
+	@mkdir -p "$(BUILD_DIR)"
+	npx @vscode/vsce package --allow-missing-repository --skip-license --out "$(VSIX)"
 	@echo "Built: $(VSIX)"
 
 install-vsix: package
@@ -91,15 +93,15 @@ quick-update: install-vsix
 
 bump-patch:
 	npm version patch --no-git-tag-version
-	@echo "Version updated to $$(node -p \"require('./package.json').version\")"
+	@node -p '"Version updated to " + require("./package.json").version'
 
 bump-minor:
 	npm version minor --no-git-tag-version
-	@echo "Version updated to $$(node -p \"require('./package.json').version\")"
+	@node -p '"Version updated to " + require("./package.json").version'
 
 bump-major:
 	npm version major --no-git-tag-version
-	@echo "Version updated to $$(node -p \"require('./package.json').version\")"
+	@node -p '"Version updated to " + require("./package.json").version'
 
 release-local: bump-patch quick-update
 	@echo "Local release prepared."

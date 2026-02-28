@@ -99,6 +99,10 @@ This rebuilds/reinstalls the extension into your regular VS Code UI (no F5 debug
 - `make release-local` — bump patch + reinstall locally
 - `make node-check` — print Node.js compatibility hint
 
+Local package output path:
+
+- `build/<extension-name>-<version>.vsix`
+
 ## Install from GitHub Release (.vsix)
 
 This is the simplest installation path without Marketplace.
