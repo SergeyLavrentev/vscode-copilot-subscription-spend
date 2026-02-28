@@ -3,7 +3,7 @@
   "displayName": "VS Code Copilot Subscription Spend",
   "description": "Shows GitHub Copilot subscription spend in the VS Code status bar",
   "publisher": "Slavrentev",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "icon": "assets/icon.png",
   "engines": {
