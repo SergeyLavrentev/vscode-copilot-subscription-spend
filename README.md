@@ -99,6 +99,18 @@ This rebuilds/reinstalls the extension into your regular VS Code UI (no F5 debug
 - `make release-local` — bump patch + reinstall locally
 - `make node-check` — print Node.js compatibility hint
 
+## Install from GitHub Release (.vsix)
+
+This is the simplest installation path without Marketplace.
+
+1. Open the repository **Releases** page on GitHub.
+2. Pick the required version tag (for example, `v0.0.3`).
+3. Download the attached `.vsix` asset.
+4. In VS Code, run **Extensions: Install from VSIX...**.
+5. Select the downloaded `.vsix` file.
+
+After installation, update the extension by installing a newer `.vsix` from a newer GitHub Release.
+
 ## Node.js version note
 
 - Recommended runtime for local build: **Node 22 LTS** (or 24+).
@@ -137,11 +149,13 @@ Workflows:
 
 - `.github/workflows/ci-auto-version-bump.yml`
 - `.github/workflows/publish-marketplace.yml`
+- `.github/workflows/release-vsix.yml`
 
 Triggers:
 
 - every push to `master`/`main`: runs build and auto-increments `patch` version in `package.json` + `package-lock.json`
-- semver tag `v*.*.*`: builds VSIX and publishes to Marketplace
+- semver tag `v*.*.*`: builds VSIX and creates a GitHub Release with `.vsix` asset
+- the same semver tag also publishes to VS Code Marketplace
 
 Required repository secret:
 
@@ -152,7 +166,7 @@ CI checks:
 - fails if `package.json.publisher` is missing
 - publish run resolves extension version directly from git tag (`v1.2.3` → `1.2.3`) before packaging/publish
 
-Recommended automated release flow:
+Recommended release flow (GitHub Releases + Marketplace):
 
 ```bash
 git push
@@ -162,6 +176,12 @@ VERSION=$(node -p "require('./package.json').version")
 git tag "v${VERSION}"
 git push origin "v${VERSION}"
 ```
+
+Result after tag push:
+
+- GitHub Release is created automatically
+- compiled `.vsix` is attached to the release assets
+- Marketplace publish workflow runs for the same tag (if `VSCE_PAT` secret is configured)
 
 ### 4) Install from Marketplace (user side)
 
