@@ -1,0 +1,116 @@
+{
+  "name": "vscode-copilot-subscription-spend",
+  "displayName": "VS Code Copilot Subscription Spend",
+  "description": "Shows GitHub Copilot subscription spend in the VS Code status bar",
+  "publisher": "Slavrentev",
+  "version": "0.0.2",
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copilot-spent-status.connectGitHub",
+        "title": "Copilot Spent: Connect GitHub Account"
+      },
+      {
+        "command": "copilot-spent-status.refresh",
+        "title": "Copilot Spent: Refresh"
+      },
+      {
+        "command": "copilot-spent-status.setToken",
+        "title": "Copilot Spent: Set GitHub Token"
+      },
+      {
+        "command": "copilot-spent-status.setManualFromText",
+        "title": "Copilot Spent: Set Manual Values From Budget Text"
+      },
+      {
+        "command": "copilot-spent-status.openBudgets",
+        "title": "Copilot Spent: Open Budgets Page"
+      },
+      {
+        "command": "copilot-spent-status.openHelp",
+        "title": "Copilot Spent: Open Help Actions"
+      },
+      {
+        "command": "copilot-spent-status.diagnoseAccess",
+        "title": "Copilot Spent: Diagnose Billing API Access"
+      }
+    ],
+    "configuration": {
+      "title": "Copilot Spent Status",
+      "properties": {
+        "copilotSpentStatus.org": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub organization slug. If empty, extension uses personal billing endpoints."
+        },
+        "copilotSpentStatus.skuFilter": {
+          "type": "string",
+          "default": "premium request",
+          "description": "Case-insensitive text filter for matching SKU/budget objects (for example: 'all premium request skus')."
+        },
+        "copilotSpentStatus.refreshMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "description": "How often to refresh spend/budget values in minutes."
+        },
+        "copilotSpentStatus.githubToken": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Fine-grained Personal Access Token with Account → **Plan: Read-only** permission. **Required** for personal billing. Create at GitHub → Settings → Developer settings → Fine-grained tokens."
+        },
+        "copilotSpentStatus.manualSpent": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": null,
+          "description": "Manual fallback spent value (USD) used when personal billing API is unavailable."
+        },
+        "copilotSpentStatus.manualBudget": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": null,
+          "description": "Manual fallback budget value (USD) used when personal billing API is unavailable."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run bundle",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node22 --outfile=out/extension.js --external:vscode",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.109.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.25.10",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
+  },
+  "dependencies": {
+    "https-proxy-agent": "^7.0.6"
+  }
+}
