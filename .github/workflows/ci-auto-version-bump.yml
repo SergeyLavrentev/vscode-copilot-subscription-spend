@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-and-bump:
-    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[skip ci]')
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,5 +52,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json
-          git commit -m "chore(version): bump to v${NEXT_VERSION} [skip ci]"
+          git commit -m "chore(version): bump to v${NEXT_VERSION}"
           git push origin "${GITHUB_REF_NAME}"
