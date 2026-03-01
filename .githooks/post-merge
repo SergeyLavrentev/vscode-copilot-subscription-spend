@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -u
+
+if ! command -v make >/dev/null 2>&1; then
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$repo_root" ]]; then
+  exit 0
+fi
+
+cd "$repo_root" || exit 0
+
+if [[ ! -d node_modules ]]; then
+  echo "[post-merge] node_modules not found, skipping auto-build. Run: npm ci && make package"
+  exit 0
+fi
+
+echo "[post-merge] Rebuilding local VSIX..."
+if make package; then
+  latest_vsix="$(ls -1 build/*.vsix 2>/dev/null | head -n1)"
+  if [[ -n "$latest_vsix" ]]; then
+    echo "[post-merge] Built: $latest_vsix"
+  fi
+else
+  echo "[post-merge] Auto-build failed. Run: make package"
+fi
+
+exit 0

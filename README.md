@@ -95,6 +95,7 @@ This rebuilds/reinstalls the extension into your regular VS Code UI (no F5 debug
 - `make install-vsix` — build and install locally into current VS Code
 - `make quick-install` — one-command install (installs deps + builds + installs)
 - `make quick-update` — one-command local update after code changes
+- `make enable-git-hooks` — enable local auto-build on `git pull` / branch checkout
 - `make bump-patch|bump-minor|bump-major` — bump version in `package.json`
 - `make release-local` — bump patch + reinstall locally
 - `make node-check` — print Node.js compatibility hint
@@ -102,6 +103,12 @@ This rebuilds/reinstalls the extension into your regular VS Code UI (no F5 debug
 Local package output path:
 
 - `build/<extension-name>-<version>.vsix`
+
+Local auto-build behavior:
+
+- `make bootstrap` automatically configures `core.hooksPath=.githooks`
+- after `git pull` (`post-merge`) and branch switch (`post-checkout`), the extension is rebuilt locally
+- old `.vsix` files in `build/` are removed before each new package build, so only the latest local version remains
 
 ## Install from GitHub Release (.vsix)
 

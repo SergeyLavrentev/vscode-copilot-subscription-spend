@@ -7,7 +7,7 @@ EXT_VERSION := $(shell node -p "require('./package.json').version")
 BUILD_DIR := build
 VSIX := $(BUILD_DIR)/$(EXT_NAME)-$(shell node -p "require('./package.json').version").vsix
 
-.PHONY: help MakeBuild build watch lint test clean package install-vsix quick-install quick-update bootstrap node-check publish preflight status bump-patch bump-minor bump-major release-local marketplace-check
+.PHONY: help MakeBuild build watch lint test clean package install-vsix quick-install quick-update bootstrap enable-git-hooks node-check publish preflight status bump-patch bump-minor bump-major release-local marketplace-check
 
 help:
 	@echo "Targets:"
@@ -23,6 +23,7 @@ help:
 	@echo "  make install-vsix - package and install VSIX locally"
 	@echo "  make quick-install - one-command local install for users"
 	@echo "  make quick-update  - reinstall latest local build"
+	@echo "  make enable-git-hooks - auto-build locally after git pull/checkout"
 	@echo "  make bump-patch   - bump package version (no git tag)"
 	@echo "  make bump-minor   - bump package version (no git tag)"
 	@echo "  make bump-major   - bump package version (no git tag)"
@@ -56,11 +57,17 @@ marketplace-check:
 	@echo "Marketplace check: OK"
 
 bootstrap: node-check
+	@$(MAKE) --no-print-directory enable-git-hooks
 	@if [ -d node_modules ]; then \
 		echo "Dependencies already installed. Skipping npm ci."; \
 	else \
 		npm ci; \
 	fi
+
+enable-git-hooks:
+	@git config core.hooksPath .githooks
+	@chmod +x .githooks/post-merge .githooks/post-checkout 2>/dev/null || true
+	@echo "Git hooks path configured: .githooks"
 
 watch:
 	npm run watch
@@ -76,6 +83,7 @@ clean:
 
 package: build
 	@mkdir -p "$(BUILD_DIR)"
+	@rm -f "$(BUILD_DIR)"/*.vsix
 	npx @vscode/vsce package --allow-missing-repository --skip-license --out "$(VSIX)"
 	@echo "Built: $(VSIX)"
 

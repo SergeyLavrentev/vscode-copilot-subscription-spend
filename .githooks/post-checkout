@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -u
+
+branch_checkout="${3:-0}"
+if [[ "$branch_checkout" != "1" ]]; then
+  exit 0
+fi
+
+if ! command -v make >/dev/null 2>&1; then
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$repo_root" ]]; then
+  exit 0
+fi
+
+cd "$repo_root" || exit 0
+
+if [[ ! -d node_modules ]]; then
+  exit 0
+fi
+
+echo "[post-checkout] Rebuilding local VSIX for current branch..."
+if make package; then
+  latest_vsix="$(ls -1 build/*.vsix 2>/dev/null | head -n1)"
+  if [[ -n "$latest_vsix" ]]; then
+    echo "[post-checkout] Built: $latest_vsix"
+  fi
+else
+  echo "[post-checkout] Auto-build failed. Run: make package"
+fi
+
+exit 0
