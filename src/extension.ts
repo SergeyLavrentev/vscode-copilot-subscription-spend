@@ -743,6 +743,10 @@ function extractSpent(payload: unknown, skuFilter: string): number | undefined {
 		const items = payload.usageItems.filter(isObjectRecord);
 		const normalizedFilter = skuFilter.toLowerCase();
 
+		if (items.length === 0) {
+			return 0;
+		}
+
 		// Sum netAmount for matching items (copilot/premium_request)
 		let matchedTotal = 0;
 		let hasMatch = false;
@@ -779,6 +783,10 @@ function extractSpent(payload: unknown, skuFilter: string): number | undefined {
 		if (anyAmount) {
 			return total;
 		}
+
+		// New billing periods may return usageItems without amount fields yet.
+		// In this case we treat spend as zero instead of failing refresh.
+		return 0;
 	}
 
 	// Generic fallback: walk all nodes looking for spent-like fields
@@ -828,6 +836,10 @@ function extractTotalAmountFromUsageItems(payload: unknown): number | undefined 
 		return undefined;
 	}
 
+	if (payload.usageItems.length === 0) {
+		return 0;
+	}
+
 	let total = 0;
 	let hasAmount = false;
 	for (const item of payload.usageItems) {
@@ -842,7 +854,13 @@ function extractTotalAmountFromUsageItems(payload: unknown): number | undefined 
 		}
 	}
 
-	return hasAmount ? total : undefined;
+	if (hasAmount) {
+		return total;
+	}
+
+	// Some responses at the beginning of billing period can contain usageItems
+	// without amount fields yet. Treat as zero spend.
+	return 0;
 }
 
 function extractProductBreakdownFromUsageItems(payload: unknown, includeAllProducts: boolean, skuFilter: string): Array<{ product: string; amount: number }> {
